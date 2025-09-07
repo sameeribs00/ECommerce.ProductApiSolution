@@ -18,57 +18,46 @@ namespace ProductApi.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var products = await _productService.GetAllAsync();
-            IEnumerable<ProductDTO> productsList = new List<ProductDTO>();
-            if (products.Any())
-            {
-                productsList = ProductConversion.MapFromEntity(products)!;
-            }
-            return productsList.Any() ? Ok(productsList) : NotFound("Products not found!");
+            var response = await _productService.GetAllAsync();
+            return new JsonResult(response);
         }
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<ProductDTO>> GetProductById(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
-            var productEntity = await _productService.GetByIdAsync(id);
-            if (productEntity is null)
-                return NotFound($"Product with id: {id} is not found");
-
-            var product = ProductConversion.MapFromEntity(productEntity);
-            return product is not null ? Ok(product) : NotFound($"Product with id: {id} is not found");
+            var response = await _productService.GetByIdAsync(id);
+            return new JsonResult(response);
         }
         [HttpPost]
-        public async Task<ActionResult<BaseResponse>> CreateProduct(ProductDTO product)
+        public async Task<IActionResult> CreateProduct(ProductDTO product)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var productEntity = ProductConversion.MapIntoEntity(product);
-            var createResponse = await _productService.CreateAsync(productEntity);
-
-            return createResponse.IsSuccess ? Ok(createResponse) : BadRequest(createResponse);
+            var response = await _productService.CreateAsync(productEntity);
+            return new JsonResult(response);
         }
         [HttpPut]
-        public async Task<ActionResult<BaseResponse>> UpdateProduct(ProductDTO product)
+        public async Task<IActionResult> UpdateProduct(ProductDTO product)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var productEntity = ProductConversion.MapIntoEntity(product);
-            var updateResponse = await _productService.UpdateAsync(productEntity);
-
-            return updateResponse.IsSuccess ? Ok(updateResponse) : BadRequest(updateResponse);
+            var response = await _productService.UpdateAsync(productEntity);
+            return new JsonResult(response);
         }
         [HttpDelete]
-        public async Task<ActionResult<BaseResponse>> DeleteProduct(ProductDTO product)
+        public async Task<IActionResult> DeleteProduct(ProductDTO product)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var productEntity = ProductConversion.MapIntoEntity(product);
-            var deleteResponse = await _productService.DeleteAsync(productEntity);
-            return deleteResponse.IsSuccess ? Ok(deleteResponse) : BadRequest(deleteResponse);
+            var response = await _productService.DeleteAsync(productEntity);
+            return new JsonResult(response);
         }
 
         //[HttpGet]

@@ -2,6 +2,7 @@
 using ECommerece.CommonLibrary.Logs;
 using ECommerece.CommonLibrary.Responses;
 using Microsoft.EntityFrameworkCore;
+using ProductApi.Application.DTOs;
 using ProductApi.Application.IServices;
 using ProductApi.Domain.Entities;
 using ProductApi.Infrastructure.Data;
@@ -15,22 +16,22 @@ namespace ProductApi.Infrastructure.Services
             try
             {
                 var existProduct = await GetByAsync(p => p.Name!.Equals(product.Name));
-                if (existProduct is not null && !string.IsNullOrEmpty(existProduct.Name))
-                    return new BaseResponse(false, $"\"{product.Name}\" is already used as a product name");
+                if (existProduct.IsSuccess && existProduct.Data is not null)
+                    return new BaseResponse() { IsSuccess = false, Message = $"\"{product.Name}\" is already used as a product name" };
 
                 var newProduct = context.Product.Add(product).Entity;
                 await context.SaveChangesAsync();
 
                 if (newProduct is not null && newProduct.Id > 0)
-                    return new BaseResponse(true, "Product has been added successfully");
-                return new BaseResponse(false,$"Error accurred while saving {product.Name}");
+                    return new BaseResponse() { IsSuccess = true, Message = "Product has been added successfully" };
+                return new BaseResponse() { IsSuccess = false, Message = $"Error accurred while saving {product.Name}" };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                return new BaseResponse(false, "Error accurred while adding new product");
+                return new BaseResponse() { IsSuccess = false, Message = "Error accurred while adding new product" };
             }
         }
 
@@ -38,68 +39,76 @@ namespace ProductApi.Infrastructure.Services
         {
             try
             {
-                var deletedProduct = await GetByIdAsync(product.Id);
+                var deletedProduct = await context.Product.FindAsync(product.Id);
                 if (deletedProduct is null)
-                    return new BaseResponse(false, "Product not found");
+                    return new BaseResponse() { IsSuccess = false, Message = "Product not found" };
+
+                context.Entry(deletedProduct).State = EntityState.Detached;
                 context.Product.Remove(product);
                 await context.SaveChangesAsync();
 
-                return new BaseResponse(true, "Product has been deleted successfully");
+                return new BaseResponse() { IsSuccess = true, Message = "Product has been deleted successfully" };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                return new BaseResponse(false, "Error accurred while deleting the product");
+                return new BaseResponse() { IsSuccess = false, Message = "Error accurred while deleting the product" };
             }
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<BaseResponse> GetAllAsync()
         {
             try
             {
                 var products = await context.Product.AsNoTracking().ToListAsync();
-                return products is not null ? products : null!;
+                var productDtos = products != null ? ProductConversion.MapFromEntity(products) : new List<ProductDTO>();
+                return new BaseResponse() { IsSuccess = true, Data = productDtos };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                throw new InvalidOperationException("Error occurred while retrieving the products");
+                return new BaseResponse() { IsSuccess = false, Message = "Error occurred while retrieving the products" };
             }
         }
 
-        public async Task<Product> GetByAsync(Expression<Func<Product, bool>> predicate)
+        public async Task<BaseResponse> GetByAsync(Expression<Func<Product, bool>> predicate)
         {
             try
             {
                 var product = await context.Product.FirstOrDefaultAsync(predicate);
-                return product is not null ? product : null!;
+                var productDto = product != null ? ProductConversion.MapFromEntity(product) : null;
+                return new BaseResponse() { IsSuccess = true, Data = productDto };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                throw new InvalidOperationException("Error accurred while retrieving the product");
+                return new BaseResponse() { IsSuccess = false, Message = "Error accurred while retrieving the product" };
             }
         }
 
-        public async Task<Product> GetByIdAsync(int id)
+        public async Task<BaseResponse> GetByIdAsync(int id)
         {
             try
             {
                 var product = await context.Product.FirstOrDefaultAsync(p => p.Id == id);
-                return product is not null ? product : null!;
+                if (product == null)
+                    return new BaseResponse() { IsSuccess = false, Message = $"No product detected with id: {id}" };
+
+                var productDto = ProductConversion.MapFromEntity(product);
+                return new BaseResponse() { IsSuccess = true, Data = productDto };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                throw new InvalidOperationException("Error accurred while retrieving the product");
+                return new BaseResponse() { IsSuccess = false, Message = "Error accurred while retrieving the product" };
             }
         }
 
@@ -109,18 +118,18 @@ namespace ProductApi.Infrastructure.Services
             {
                 var exisit = await context.Product.AnyAsync(p => p.Id == entity.Id);
                 if (!exisit)
-                    return new BaseResponse(false, "Product not found");
+                    return new BaseResponse() { IsSuccess = false, Message = "Product not found" };
                  
                 context.Product.Update(entity);
                 await context.SaveChangesAsync();
-                return new BaseResponse(true, "Product has been updated successfully");
+                return new BaseResponse() { IsSuccess = true, Message = "Product has been updated successfully" };
             }
             catch (Exception ex)
             {
                 //Logging the error:
                 LogException.LogExceptions(ex);
                 //Return user friendly error respose:
-                return new BaseResponse(false, "Error accurred while updateing the product");
+                return new BaseResponse() { IsSuccess = false, Message = "Error accurred while updateing the product" };
             }
 
         }
