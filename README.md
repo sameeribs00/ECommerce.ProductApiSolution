@@ -1,8 +1,10 @@
 **ECommerce Product API Solution**
+
 A scalable, well-structured RESTful API for managing e-commerce products. 
 
 Built with .NET 8 and Clean Architecture principles,this microservice provides product CRUD operations, validation, logging, and API documentation.
 
+---
 
 **Features:**
 
@@ -24,8 +26,10 @@ Built with .NET 8 and Clean Architecture principles,this microservice provides p
 
 -Generic service pattern for reusable data operations
 
+---
 
 **Architecture:**
+
 The solution follows Clean Architecture with the following layers:
 
 -ProductApi.Api            (Presentation layer)
@@ -36,6 +40,7 @@ The solution follows Clean Architecture with the following layers:
 
 -ProductApi.Infrastructure (Infrastructure layer)
 
+---
 
 **Design patterns and practices:**
 
@@ -51,7 +56,7 @@ The solution follows Clean Architecture with the following layers:
 
 -Centralized exception handling and consistent response envelope
 
-
+---
 
 **Technical Stack:**
 
@@ -65,7 +70,7 @@ The solution follows Clean Architecture with the following layers:
 
 -Swagger / OpenAPI
 
-
+---
 
 **Key Libraries:**
 
@@ -79,7 +84,7 @@ The solution follows Clean Architecture with the following layers:
 
 -ClosedXML (for Excel processing)
 
-
+---
 
 **Development Tools:**
 
