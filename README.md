@@ -1,94 +1,130 @@
-**ECommerce Product API Solution**
+# ECommerce Product API Solution
 
-A scalable, well-structured RESTful API for managing e-commerce products. 
+A modern, scalable RESTful API solution for managing e-commerce products built with .NET 8 and Clean Architecture principles. This microservice provides comprehensive product management capabilities including CRUD operations, data validation, and robust error handling.
 
-Built with .NET 8 and Clean Architecture principles,this microservice provides product CRUD operations, validation, logging, and API documentation.
+## 🚀 Features
 
----
+- **Complete CRUD Operations**: Create, Read, Update, and Delete products
+- **Data Validation**: Comprehensive input validation with data annotations
+- **Error Handling**: Centralized exception handling with user-friendly error messages
+- **Logging**: Structured logging using Serilog for better observability
+- **Database Integration**: Entity Framework Core with SQL Server support
+- **API Documentation**: Swagger/OpenAPI integration for interactive API documentation
+- **Docker Support**: Containerized deployment with multi-stage Docker builds
+- **Clean Architecture**: Separation of concerns with layered architecture
+- **Generic Service Pattern**: Reusable service interfaces for consistent data operations
 
-**Features:**
+## 🏗️ Technical Stack
 
--Complete Create, Read, Update, Delete (CRUD) operations for products
+### Core Technologies
+- **.NET 8.0** - Latest LTS version of .NET framework
+- **ASP.NET Core Web API** - RESTful API framework
+- **Entity Framework Core 8.0.7** - Object-Relational Mapping (ORM)
+- **SQL Server** - Primary database
+- **Swagger/OpenAPI** - API documentation and testing
 
--Input validation using data annotations
+### Key Libraries & Packages
+- **Microsoft.EntityFrameworkCore.Tools** - EF Core tooling for migrations
+- **Microsoft.VisualStudio.Azure.Containers.Tools.Targets** - Docker containerization
+- **Swashbuckle.AspNetCore** - Swagger UI integration
+- **Serilog.AspNetCore** - Structured logging
+- **Microsoft.AspNetCore.Authentication.JwtBearer** - JWT authentication support
+- **ClosedXML** - Excel file processing capabilities
 
--Centralized error handling with consistent error responses
+### Development Tools
+- **Visual Studio 2022** - Primary IDE
+- **Docker Desktop** - Containerization platform
+- **SQL Server Management Studio** - Database management
 
--Structured logging via Serilog
+## 🏛️ Architecture & Design Patterns
 
--Persistence using Entity Framework Core and SQL Server
+### Clean Architecture Implementation
+The solution follows Clean Architecture principles with clear separation of concerns:
 
--Interactive API documentation with Swagger/OpenAPI
+```
+ProductApi.Api (Presentation Layer)
+    ↓
+ProductApi.Application (Application Layer)
+    ↓
+ProductApi.Domain (Domain Layer)
+    ↓
+ProductApi.Infrastructure (Infrastructure Layer)
+```
 
--Docker support with multi-stage builds
+### Design Patterns Applied
 
--Clean Architecture with separation of concerns
+1. **Repository Pattern**: Abstracted data access through service interfaces
+2. **Dependency Injection**: IoC container for loose coupling
+3. **DTO Pattern**: Data Transfer Objects for API communication
+4. **Generic Service Pattern**: Reusable service interfaces (`IGenericService<T>`)
+5. **Factory Pattern**: Service container for dependency registration
+6. **Mapping Pattern**: Entity-DTO conversion utilities
 
--Generic service pattern for reusable data operations
+### Project Structure
 
----
+```
+ECommerce.ProductApiSolution/
+├── ProductApi.Api/                 # Web API layer
+│   ├── Controllers/               # API controllers
+│   ├── appsettings.json          # Configuration
+│   └── Dockerfile                # Container configuration
+├── ProductApi.Application/        # Application layer
+│   ├── DTOs/                     # Data Transfer Objects
+│   └── IServices/                # Service interfaces
+├── ProductApi.Domain/            # Domain layer
+│   └── Entities/                 # Domain entities
+└── ProductApi.Infrastructure/    # Infrastructure layer
+    ├── Data/                     # Database context & migrations
+    ├── Services/                 # Service implementations
+    └── DependencyInjection/      # DI configuration
+```
 
-**Architecture:**
+## 🛠️ Setup & Installation
 
-The solution follows Clean Architecture with the following layers:
+### Prerequisites
 
--ProductApi.Api            (Presentation layer)
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (LocalDB or Express)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) or [VS Code](https://code.visualstudio.com/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) (optional)
 
--ProductApi.Application    (Application layer)
+### Installation Steps
 
--ProductApi.Domain         (Domain layer)
+1. **Clone the Repository**
+   ```bash
+   git clone <repository-url>
+   cd ECommerce.ProductApiSolution
+   ```
 
--ProductApi.Infrastructure (Infrastructure layer)
+2. **Database Setup**
+   - Ensure SQL Server is running
+   - Update connection string in `ProductApi.Api/appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "eCommerceConnection": "Server=(local); Database=ECommerce.Product; Trusted_Connection=true; TrustServerCertificate=true;"
+     }
+   }
+   ```
 
----
+3. **Restore Dependencies**
+   ```bash
+   dotnet restore
+   ```
 
-**Design patterns and practices:**
+4. **Run Database Migrations**
+   ```bash
+   cd ProductApi.Infrastructure
+   dotnet ef database update --startup-project ../ProductApi.Api
+   ```
 
--Repository / Service abstraction for data access
+5. **Build the Solution**
+   ```bash
+   dotnet build
+   ```
 
--Dependency Injection for loose coupling
-
--DTOs for API surface models
-
--Generic service interfaces (e.g., IGenericService<T>)
-
--Custom mapping utilities for entity-to-DTO conversions
-
--Centralized exception handling and consistent response envelope
-
----
-
-**Technical Stack:**
-
--.NET 8
-
--ASP.NET Core Web API
-
--Entity Framework Core 8
-
--SQL Server
-
--Swagger / OpenAPI
-
----
-
-**Key Libraries:**
-
--Microsoft.EntityFrameworkCore.Tools
-
--Swashbuckle.AspNetCore
-
--Serilog.AspNetCore
-
--Microsoft.AspNetCore.Authentication.JwtBearer
-
--ClosedXML (for Excel processing)
-
----
-
-**Development Tools:**
-
--Visual Studio 2022 or VS Code
-
--Docker (for container builds and runtime)
-
+6. **Run the Application**
+   ```bash
+   cd ProductApi.Api
+   dotnet run
+   ```
